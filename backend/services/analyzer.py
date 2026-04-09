@@ -20,7 +20,7 @@ class LLMNewsAnalysis(BaseModel):
 class NewsAnalyzer:
     def __init__(self) -> None:
         self.api_key = os.getenv("OPENAI_API_KEY", "")
-        self.model = os.getenv("OPENAI_MODEL", "gpt-5.4")
+        self.model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
     def analyze(self, articles_text: str) -> LLMNewsAnalysis:
         if not self.api_key:

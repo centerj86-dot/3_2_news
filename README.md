@@ -53,7 +53,7 @@ copy .env.example .env   # Windows
 | `NAVER_CLIENT_ID` | 네이버 Client ID |
 | `NAVER_CLIENT_SECRET` | 네이버 Client Secret |
 | `OPENAI_API_KEY` | OpenAI API 키 |
-| `OPENAI_MODEL` | 사용 모델명 (예: `gpt-5.4`) |
+| `OPENAI_MODEL` | 사용 모델명 (예: `gpt-4o`, `gpt-4o-mini`) |
 
 ### 프론트엔드
 
@@ -62,9 +62,28 @@ copy .env.example .env   # Windows
 | 변수 | 설명 |
 |------|------|
 | `NEXT_PUBLIC_API_BASE_URL` | (선택) 공개 API 베이스 URL |
-| `BACKEND_URL` | Next.js가 프록시할 백엔드 주소 (기본 `http://127.0.0.1:8000`) |
+| `BACKEND_URL` | (선택) FastAPI 주소. **설정하면** 요청을 Python 백엔드로 프록시합니다. 로컬에서는 `http://127.0.0.1:8000` 권장. **비우면** 같은 프로세스에서 네이버·OpenAI를 직접 호출합니다(Vercel 배포 시 이 방식). |
 
-로컬 개발 시 프론트는 `/api/news`로 요청하고, Route Handler가 `BACKEND_URL`로 전달합니다.
+로컬에서 FastAPI를 쓸 때: `BACKEND_URL=http://127.0.0.1:8000`  
+Vercel만 쓸 때: `BACKEND_URL`을 넣지 말고 아래 환경 변수만 설정합니다.
+
+## Vercel 배포
+
+1. GitHub 저장소를 Vercel에 연결합니다.
+2. **Project → Settings → General → Root Directory** 를 **`frontend`** 로 지정합니다. (저장소 루트에 `package.json`이 없으면 빌드가 실패하므로 이 설정이 필수입니다.)
+3. **Environment Variables**에 다음을 등록합니다 (Production / Preview 모두).
+
+| 변수 | 설명 |
+|------|------|
+| `NAVER_CLIENT_ID` | 네이버 Client ID |
+| `NAVER_CLIENT_SECRET` | 네이버 Client Secret |
+| `OPENAI_API_KEY` | OpenAI API 키 |
+| `OPENAI_MODEL` | `gpt-4o-mini` 또는 `gpt-4o` 등 **계정에서 사용 가능한 모델명** (존재하지 않는 이름이면 API 오류가 납니다) |
+
+- **`BACKEND_URL`은 넣지 않는 것**을 권장합니다. 넣으면 해당 URL의 FastAPI로만 요청이 가며, Vercel에 네이버·OpenAI 키를 넣어도 프록시 경로에서는 백엔드가 키를 씁니다.
+- Hobby 플랜은 서버리스 실행 시간 제한이 있어, 응답이 느리면 타임아웃이 날 수 있습니다. 필요 시 Pro 플랜이나 별도 백엔드 호스팅을 검토하세요.
+
+**Deploy 버튼이 비활성화**되는 경우: Root Directory 미설정, 빌드 명령 실패, 필수 항목 미입력 등이 흔한 원인입니다. 우선 Root Directory를 `frontend`로 저장한 뒤 다시 시도하세요.
 
 ## 설치 및 실행
 
